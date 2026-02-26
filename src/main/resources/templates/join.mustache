@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Pretendard', sans-serif; }
+        .join-container { max-width: 450px; margin-top: 80px; }
+        .card { border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-radius: 15px; }
+        .form-label { font-weight: 600; color: #495057; }
+        .btn-join { padding: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container join-container">
+    <div class="card p-4">
+        <div class="card-body">
+            <h2 class="text-center fw-bold mb-4">회원가입</h2>
+
+            <form action="/join" method="post" id="joinForm">
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">아이디</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력하세요">
+                    <div id="username-error" class="text-danger small mt-1" style="display: none;">이미 사용 중인 아이디입니다.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요">
+                </div>
+
+                <div class="mb-4">
+                    <label for="nickname" class="form-label">닉네임</label>
+                    <input type="text" class="form-control" id="nickname" name="nickname">
+                    <div id="nickname-error" class="text-danger small mt-1" style="display: none;">이미 사용 중인 닉네임입니다.</div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                    <a href="/" class="btn btn-light border flex-grow-1 py-2">취소</a>
+                    <input type="submit" class="btn btn-primary flex-grow-1 py-2 fw-bold" value="회원가입">
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('joinForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // 일단 제출을 막고 검사 시작
+
+        const userId = document.getElementById('username');
+        const password = document.getElementById('password');
+        const nickname = document.getElementById('nickname');
+
+        const userError = document.getElementById('username-error');
+        const nickError = document.getElementById('nickname-error');
+
+        // 초기화 (이전 에러 메시지 숨기기)
+        userError.style.display = 'none';
+        nickError.style.display = 'none';
+
+        // 1. 기본 빈칸 체크
+        if (!userId.value.trim()) { alert('아이디를 입력하세요'); userId.focus(); return; }
+        if (!password.value.trim()) { alert('비밀번호를 입력하세요'); password.focus(); return; }
+        if (!nickname.value.trim()) { alert('닉네임을 입력하세요'); nickname.focus(); return; }
+
+        try {
+            // 2. 서버에 아이디 중복 확인 요청
+            const userRes = await fetch(`/api/check-username?username=${userId.value}`);
+            const isUserExists = await userRes.json();
+
+            if (isUserExists) {
+                userError.style.display = 'block'; // 빨간 글씨 표시
+                userId.focus();
+                return; // 종료
+            }
+
+            // 3. 서버에 닉네임 중복 확인 요청
+            const nickRes = await fetch(`/api/check-nickname?nickname=${nickname.value}`);
+            const isNickExists = await nickRes.json();
+
+            if (isNickExists) {
+                nickError.style.display = 'block'; // 빨간 글씨 표시
+                nickname.focus();
+                return; // 종료
+            }
+
+            // 모든 검사 통과 시 실제 제출
+            this.submit();
+
+        } catch (error) {
+            console.error("중복 체크 중 오류 발생:", error);
+            alert("서버 통신 오류가 발생했습니다.");
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
