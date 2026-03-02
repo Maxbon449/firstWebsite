@@ -1,6 +1,7 @@
 package com.maxbon.springFirst.domain.user.entity;
 
 import com.maxbon.springFirst.domain.board.entity.BoardEntity;
+import com.maxbon.springFirst.domain.comment.entity.CommentEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,5 +38,20 @@ public class UserEntity {
     public void removeBoardEntity(BoardEntity entity) {
         entity.setUserEntity(null);
         this.boardEntityList.remove(entity);
+    }
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<CommentEntity> commentEntityList = new ArrayList<>();
+
+    // 유저에 새로운 댓글 추가
+    public void addCommentEntity(CommentEntity entity) {
+        entity.setUserEntity(this);
+        this.commentEntityList.add(entity);
+    }
+
+    // 댓글 삭제할 때 유저와 연관관계 삭제
+    public void removeCommentEntity(CommentEntity entity) {
+        entity.setUserEntity(null);
+        this.commentEntityList.remove(entity);
     }
 }
