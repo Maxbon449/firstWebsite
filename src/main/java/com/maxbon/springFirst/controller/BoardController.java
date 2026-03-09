@@ -4,6 +4,8 @@ import com.maxbon.springFirst.domain.board.dto.BoardRequestDTO;
 import com.maxbon.springFirst.domain.board.dto.BoardResponseDTO;
 import com.maxbon.springFirst.domain.board.entity.BoardRoleType;
 import com.maxbon.springFirst.domain.board.service.BoardService;
+import com.maxbon.springFirst.domain.comment.dto.CommentResponseDTO;
+import com.maxbon.springFirst.domain.comment.service.CommentService;
 import com.maxbon.springFirst.domain.user.auth.PrincipalDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -19,9 +21,11 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
-    public BoardController(BoardService boardService) {
+    public BoardController(BoardService boardService, CommentService commentService) {
         this.boardService = boardService;
+        this.commentService = commentService;
     }
 
     // 전체 게시판 : 페이지 응답
@@ -76,6 +80,8 @@ public class BoardController {
     public String readIdPage(Model model, @PathVariable Long id) {
         BoardResponseDTO dto = boardService.readOneBoard(id);
         model.addAttribute("board", dto);
+        List<CommentResponseDTO> comments = commentService.readAllComments(id);
+        model.addAttribute("comments", comments);
 
         return "readIdBoard";
     }

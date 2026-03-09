@@ -9,5 +9,5 @@ import lombok.Setter;
 public class CommentRequestDTO {
     private String comment;
     private int up;
-
+    private Long boardId;
 }

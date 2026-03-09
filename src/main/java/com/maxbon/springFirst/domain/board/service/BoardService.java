@@ -68,7 +68,6 @@ public class BoardService {
         userRepository.save(userEntity);
 
         return entity.getId();
-
     }
 
     // READ 게시글 하나 읽기

@@ -28,18 +28,18 @@ public class BoardEntity {
     @ManyToOne
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     List<CommentEntity> commentEntityList = new ArrayList<>();
 
     // 게시글에 새로운 댓글 추가
     public void addCommentEntity(CommentEntity entity) {
-        entity.setUserEntity(this);
+        entity.setBoardEntity(this);
         this.commentEntityList.add(entity);
     }
 
     // 댓글 삭제할 때 게시글과 연관관계 삭제
     public void removeCommentEntity(CommentEntity entity) {
-        entity.setUserEntity(null);
+        entity.setBoardEntity(null);
         this.commentEntityList.remove(entity);
     }
 }
